@@ -13,7 +13,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: frontendUrl,
+    origin: frontendUrl === '*' ? true : [frontendUrl, 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -26,9 +26,9 @@ async function bootstrap() {
     }),
   );
 
-  const port = configService.get<number>('PORT', 3001);
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  const port = process.env.PORT || configService.get<number>('PORT') || 3001;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on port: ${port}`);
   console.log(`CORS enabled for origin: ${frontendUrl}`);
 }
 bootstrap();
